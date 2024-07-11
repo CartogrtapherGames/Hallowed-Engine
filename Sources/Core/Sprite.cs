@@ -55,6 +55,12 @@ public class Sprite
     _scale.Y = y;
   }
 
+  /// <summary>
+  /// draw the sprite on screen.
+  /// Its important to call this in between a spriteBatch in the main class.
+  /// </summary>
+  /// <param name="batch"></param>
+  /// <param name="delta"></param>
   public virtual void Draw(SpriteBatch batch, GameTime delta)
   {
     batch.Draw(_texture,Rect,_color);
