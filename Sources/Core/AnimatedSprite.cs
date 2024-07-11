@@ -13,11 +13,11 @@ public class AnimatedSprite : Sprite
 {
 
   public event Action Completed;
-  private HashSet<Action> _handlers = new HashSet<Action>();
+  private readonly HashSet<Action> _handlers = new HashSet<Action>();
   
   private readonly Dictionary<string, AnimationObject> _animations = new();
   private readonly Area2D _frameSize;
-  private int _framerate;
+  private readonly int _framerate;
   private int _frame;
   private bool _isPlaying;
   private bool _isCompleted;
