@@ -7,12 +7,13 @@ namespace Hallowed.Core;
 /// <summary>
 /// Represents a sprite that can be rendered on the screen.
 /// </summary>
-public class Sprite
+public class Sprite : IDisposable
 {
   private Color _color;
   private Vector2 _position;
   private Vector2 _scale;
   private Texture2D _texture;
+  
 
   public Sprite(Texture2D texture)
   {
@@ -96,7 +97,7 @@ public class Sprite
   /// <summary>
   /// The sprite height scaling with the scale value
   /// </summary>
-  public int Width
+  public virtual int Width
   {
     get
     {
@@ -110,7 +111,7 @@ public class Sprite
   /// <summary>
   /// the sprite height scaling with the scale value
   /// </summary>
-  public int Height
+  public virtual int Height
   {
     get
     {
@@ -184,4 +185,9 @@ public class Sprite
   }
   
   #endregion
+
+  public virtual void Dispose()
+  {
+    _texture?.Dispose();
+  }
 }

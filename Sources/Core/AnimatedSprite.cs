@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,6 +13,7 @@ public class AnimatedSprite : Sprite
 {
 
   public event Action Completed;
+  private HashSet<Action> _handlers = new HashSet<Action>();
   
   private readonly Dictionary<string, AnimationObject> _animations = new();
   private readonly Area2D _frameSize;
@@ -21,14 +23,36 @@ public class AnimatedSprite : Sprite
   private bool _isCompleted;
   private string _currentAnimation;
   private float _animationTimer;
-
+  
+  
   public sealed override Rectangle SourceRect { get; protected set; }
+
+  public override int Width
+  {
+    get
+    {
+      var scaleX = Math.Abs(Scale.X);
+      var result = scaleX * _frameSize.Width;
+      return (int)result;
+    }
+  }
+
+  public override int Height
+  {
+    get
+    {
+      var scaleX = Math.Abs(Scale.X);
+      var result = scaleX * _frameSize.Height;
+      return (int)result;
+    }
+  }
 
   public AnimatedSprite(Texture2D texture, Area2D frameSize, int framerate = 8): base(texture)
   {
     _framerate = framerate;
     _frameSize = frameSize;
     SourceRect = new Rectangle(0, 0, _frameSize.Width, frameSize.Height);
+    
     _currentAnimation = "";
     _frame = 0;
     _isPlaying = false;
@@ -66,22 +90,35 @@ public class AnimatedSprite : Sprite
       Loop = loop
     };
     _animations.Add(name,data);
+    Debug.WriteLine("added " + name);
   }
-  
+
+  private void Reset()
+  {
+    _frame = 0;
+    _currentAnimation = "";
+    _isCompleted = false;
+    _isPlaying = true;
+    _animationTimer = 0;
+  }
   public AnimatedSprite Play(string name)
   {
-    if (_animations.ContainsKey(name)) throw new Exception($"The animation {name} does not exist!");
-    _frame = 0;
+    if (!_animations.ContainsKey(name)) throw new Exception($"The animation {name} does not exist!");
+    Reset();
     _currentAnimation = name;
-    _isCompleted = false;
     _isPlaying = true;
     return this;
   }
 
   public AnimatedSprite OnCompleted(Action completedAction)
   {
-    Completed += completedAction;
+
+    if (_handlers.Add(completedAction))
+    {
+      Completed += completedAction;
+    }
     _isCompleted = true;
+    Reset();
     return this;
   }
   
@@ -112,9 +149,23 @@ public class AnimatedSprite : Sprite
   
   public override void Draw(SpriteBatch batch, GameTime delta)
   {
+
     batch.Draw(Texture,Rect,SourceRect,Color);
   }
-  
+
+ 
+  public override void Dispose()
+  {
+    base.Dispose();
+    // in this case we're unsubscribing to clear the events
+    foreach (var handle in _handlers)
+    {
+      Completed -= handle;
+    }
+    _handlers.Clear();
+  }
+
+
   public override void Update(GameTime delta)
   {
     if (!_isPlaying) return;
@@ -126,7 +177,7 @@ public class AnimatedSprite : Sprite
     }
     else
     {
-    //  ProcessNormalAnimation(sequence,anim);
+      ProcessAnimation(sequence,delta);
     }
   }
 
@@ -147,12 +198,20 @@ public class AnimatedSprite : Sprite
 
   private void ProcessAnimation(Point[] sequences, GameTime delta)
   {
-    
+    var frameTotalTime = 1f / _framerate;
+    _animationTimer += (float)delta.ElapsedGameTime.TotalSeconds;
+
+    if (!(_animationTimer >= frameTotalTime)) return;
+    if (_frame > sequences.Length)
+    {
+      Completed?.Invoke();
+      Reset();
+    }
   }
 
   private AnimationObject Animation(string name)
   {
-    if (_animations.ContainsKey(name)) throw new Exception($"The animation {name} does not exist!");
+    if (!_animations.ContainsKey(name)) throw new Exception($"The animation {name} does not exist!");
     return _animations[name];
   }
 
