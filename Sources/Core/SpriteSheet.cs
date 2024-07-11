@@ -5,13 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Hallowed.Core;
 
-internal struct AnimationObject
-{
-  public int Column;
-  public int FrameCount;
-  public bool Loop;
-}
-
 /// <summary>
 /// the class that handle spritesheet animations
 /// it is kept seperated of the AnimatedSprite class to for data reason.
@@ -60,7 +53,7 @@ public class SpriteSheet
       throw new Exception("the key " + name + "already exists!");
     var data = new AnimationObject()
     {
-      Column = column,
+      Row = column,
       FrameCount = frameCount,
       Loop = loop
     };

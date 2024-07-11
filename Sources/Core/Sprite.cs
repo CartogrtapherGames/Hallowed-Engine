@@ -66,7 +66,7 @@ public class Sprite
     batch.Draw(_texture,Rect,_color);
   }
 
-  public virtual void Update()
+  public virtual void Update(GameTime delta)
   {
     
   }
@@ -160,7 +160,11 @@ public class Sprite
   /// Do take note that source rect is meant to be used as the frame rect when doing animated sprite
   /// in the base class Sprite its only added for conveniences.
   /// </remarks>
-  public virtual Rectangle SourceRect => new((int)_position.X, (int)_position.Y, Width,Height);
+  public virtual Rectangle SourceRect
+  {
+    get;
+    protected set;
+  }
 
   /// <summary>
   /// the sprite X coordinates

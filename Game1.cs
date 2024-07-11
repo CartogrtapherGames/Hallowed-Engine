@@ -29,11 +29,14 @@ public class Game1 : Game
   protected override void LoadContent()
   {
     base.LoadContent();
+    
     _spriteBatch = new SpriteBatch(GraphicsDevice);
     var texture = Content.Load<Texture2D>("witch");
-    _witch = new Sprite(texture);
-    _witch.X = 100;
-    _witch.Y = 100;
+    _witch = new Sprite(texture)
+    {
+      X = 100,
+      Y = 100
+    };
     // TODO: use this.Content to load your game content here
   }
 
