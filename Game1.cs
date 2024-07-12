@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics;
 using Hallowed.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,6 +14,8 @@ public class Game1 : Game
   private Sprite _witch;
   private AnimatedSprite _king;
 
+
+  private KeyboardState oldKeyboardState;
   public Game1()
   {
     _graphics = new GraphicsDeviceManager(this);
@@ -41,19 +44,24 @@ public class Game1 : Game
 
     var kingTexture = Content.Load<Texture2D>("king");
     var frameSize = new Area2D(32, 32);
-    _king = new AnimatedSprite(kingTexture, frameSize, 4)
+    
+    _king = new AnimatedSprite(kingTexture, frameSize, new Point(0,1),8)
     {
       X = 0,
       Y = 0
     };
+    
     _king.SetScale(4f,4f);
-    _king.AddAnimation("idle", 1,4,true);
+    _king.AddAnimation("idle", new FrameRange(1, 0),4, true);
+    _king.AddAnimation("walk", new FrameRange(1,5),4,true);
     // TODO: use this.Content to load your game content here
   }
 
   protected override void Update(GameTime gameTime)
   {
 
+    var newKeyboardState = Keyboard.GetState();
+    
     _king.Update(gameTime);
     if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
         Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -65,8 +73,27 @@ public class Game1 : Game
       _witch.SetScale(4f,4f);
       _king.Play("idle");
     }
+
+    if (newKeyboardState.IsKeyDown(Keys.LeftShift) & oldKeyboardState.IsKeyUp(Keys.LeftShift)) // TODO : fix that shit because jesus christ its way to much conditions
+    {
+      _king.Play("walk");
+      /*
+      if (_king.IsPlaying())
+      {
+        Debug.WriteLine("ping!");
+        _king.Stop();
+      }
+      else
+      {
+        _king.Resume();
+      }
+      */
+
+
+    }
     // TODO: Add your update logic here
 
+    oldKeyboardState = newKeyboardState;
     base.Update(gameTime);
   }
 

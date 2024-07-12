@@ -47,11 +47,14 @@ public class AnimatedSprite : Sprite
     }
   }
 
-  public AnimatedSprite(Texture2D texture, Area2D frameSize, int framerate = 8): base(texture)
+  // todo : improve the performance? I dunno I feel theres some kind of bootlegging happening
+  public AnimatedSprite(Texture2D texture, Area2D frameSize, Point firstFrame, int framerate = 8): base(texture)
   {
     _framerate = framerate;
     _frameSize = frameSize;
-    SourceRect = new Rectangle(0, 0, _frameSize.Width, frameSize.Height);
+    var x = frameSize.Width * firstFrame.X;
+    var y = frameSize.Height * firstFrame.Y;
+    SourceRect = new Rectangle(x, y, _frameSize.Width, frameSize.Height);
     
     _currentAnimation = "";
     _frame = 0;
@@ -79,13 +82,14 @@ public class AnimatedSprite : Sprite
     return Texture.Height / _frameSize.Height;
   }
 
-  public void AddAnimation(string name, int row, int frameCount, bool loop)
+  public void AddAnimation(string name, FrameRange range, int frameCount = 4, bool loop = false)
   {
     if(_animations.ContainsKey(name))
       throw new Exception("the key " + name + "already exists!");
     var data = new AnimationObject()
     {
-      Row = row,
+      Row = range.Row,
+      Column = range.Column,
       FrameCount = frameCount,
       Loop = loop
     };
@@ -122,7 +126,7 @@ public class AnimatedSprite : Sprite
     return this;
   }
   
-  public void Stop(string name, bool reset = false)
+  public void Stop( bool reset = false)
   {
     if (reset)
     {
@@ -221,7 +225,7 @@ public class AnimatedSprite : Sprite
     for (int i = 0; i < anim.FrameCount; i++)
     {
       var row = anim.Row * _frameSize.Height;
-      var column = i * _frameSize.Width;
+      var column = (anim.Column + i) * _frameSize.Width;
       sequence[i] = new Point(column,row);
     }
 
