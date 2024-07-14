@@ -23,7 +23,6 @@ public class Game1 : SceneBase
 
   protected override void Initialize()
   {
-    InputMap.BindAction("action", Keys.Space);
     // TODO: Add your initialization logic here
     _witch = new Sprite()
     {
@@ -31,6 +30,7 @@ public class Game1 : SceneBase
       Y = 100,
     };
     base.Initialize();
+    InputMap.BindAction(PlayerInput.Space, Keys.Space);
   }
 
   protected override void LoadContent()
@@ -68,7 +68,7 @@ public class Game1 : SceneBase
         Keyboard.GetState().IsKeyDown(Keys.Escape))
       Exit();
 
-    if (InputMap.IsPressed("action"))
+    if (InputMap.IsPressed(PlayerInput.Space))
     {
       _witch.SetScale(4f, 4f);
       _king.Play("idle");

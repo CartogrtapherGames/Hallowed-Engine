@@ -6,15 +6,33 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Hallowed.Scenes;
 
+public enum PlayerInput
+{
+  Space
+}
+
 public abstract class SceneBase : Game
 {
   protected List<IRenderableChild> _children = new List<IRenderableChild>();
 
   protected GraphicsDeviceManager Graphics;
   protected SpriteBatch SpriteBatch;
+  protected InputMap<PlayerInput> InputMap;
 
   protected SceneBase()
   {
+  }
+
+  protected override void Initialize()
+  {
+    InitializeInput();
+    base.Initialize();
+  }
+
+  // we initialize our input here  
+  protected virtual void InitializeInput()
+  {
+    InputMap = new InputMap<PlayerInput>();
   }
 
   protected override void LoadContent()

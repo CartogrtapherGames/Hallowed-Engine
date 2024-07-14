@@ -8,17 +8,17 @@ namespace Hallowed.Core;
 
 #nullable disable
 // TODO : make it not a static class later? since it would make senses that the keyboard is bound to the scene class and passed along their object
-public static class InputMap
+public class InputMap<T> where T : System.Enum
 {
 // for the moment it works as a basic class im to tired blegh
 
-  private static Dictionary<string, List<AbstractKey>> _actions = new();
+  private readonly Dictionary<T, List<AbstractKey>> _actions = new();
 
-  private static KeyboardState _oldState;
-  private static KeyboardState _newState;
+  private KeyboardState _oldState;
+  private KeyboardState _newState;
 
 
-  public static void BindAction(string name, Keys key)
+  public void BindAction(T name, Keys key)
   {
     var input = new AbstractKey()
     {
@@ -37,7 +37,7 @@ public static class InputMap
     }
   }
 
-  public static void BindAction(string name, Keys[] keys)
+  public void BindAction(T name, Keys[] keys)
   {
     if (_actions.ContainsKey(name))
     {
@@ -58,7 +58,7 @@ public static class InputMap
     }
   }
 
-  public static void BindAction(string name, List<Keys> keys)
+  public void BindAction(T name, List<Keys> keys)
   {
     if (_actions.ContainsKey(name))
     {
@@ -73,7 +73,7 @@ public static class InputMap
     }
   }
 
-  public static void BindAction(string name, Buttons button)
+  public void BindAction(T name, Buttons button)
   {
     var input = new AbstractKey()
     {
@@ -91,7 +91,7 @@ public static class InputMap
     }
   }
 
-  public static void BindAction(string name, Buttons[] buttons)
+  public void BindAction(T name, Buttons[] buttons)
   {
     if (_actions.ContainsKey(name))
     {
@@ -112,7 +112,7 @@ public static class InputMap
     }
   }
 
-  public static void BindAction(string name, List<Buttons> buttons)
+  public void BindAction(T name, List<Buttons> buttons)
   {
     if (_actions.ContainsKey(name))
     {
@@ -127,7 +127,7 @@ public static class InputMap
     }
   }
 
-  public static bool IsPressed(string name)
+  public bool IsPressed(T name)
   {
     if (!_actions.ContainsKey(name)) throw new Exception($"the action {name} does not exists!");
     var action = _actions[name];
@@ -161,29 +161,29 @@ public static class InputMap
     return false;
   }
 
-  public static bool IsPressed(Keys key)
+  public bool IsPressed(Keys key)
   {
     return GetState().IsKeyDown(key);
   }
 
-  public static bool IsUp(Keys key)
+  public bool IsUp(Keys key)
   {
     return GetState().IsKeyUp(key);
   }
 
-  public static bool IsTriggered(Keys key)
+  public bool IsTriggered(Keys key)
   {
     return GetState().IsKeyDown(key) && _oldState.IsKeyUp(key);
   }
 
-  public static void Update()
+  public void Update()
   {
     _newState = GetState();
     _oldState = _newState;
   }
 
-  private static KeyboardState GetState() => InputMap.PlatformGetState();
-  private static GamePadState GetGamepadState() => GamePad.GetState(PlayerIndex.One);
+  private static KeyboardState GetState() => PlatformGetState();
+  private GamePadState GetGamepadState() => GamePad.GetState(PlayerIndex.One);
 
   private static KeyboardState PlatformGetState()
   {
