@@ -1,5 +1,4 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Hallowed.Core;
 using Hallowed.Scenes;
 using Microsoft.Xna.Framework;
@@ -14,7 +13,7 @@ public class Game1 : SceneBase
   private SpriteBatch _spriteBatch;
   private Sprite _witch;
   private AnimatedSprite _king;
-  
+
   public Game1()
   {
     _graphics = new GraphicsDeviceManager(this);
@@ -24,6 +23,7 @@ public class Game1 : SceneBase
 
   protected override void Initialize()
   {
+    InputMap.BindAction("action", Keys.Space);
     // TODO: Add your initialization logic here
     _witch = new Sprite()
     {
@@ -36,43 +36,41 @@ public class Game1 : SceneBase
   protected override void LoadContent()
   {
     base.LoadContent();
-    
+
     _spriteBatch = new SpriteBatch(GraphicsDevice);
     var texture = Content.Load<Texture2D>("witch");
     _witch.Texture = texture;
 
     var kingTexture = Content.Load<Texture2D>("king");
     var frameSize = new Area2D(32, 32);
-    
-    _king = new AnimatedSprite(kingTexture, frameSize, new Point(0,1),8)
+
+    _king = new AnimatedSprite(kingTexture, frameSize, new Point(0, 1), 8)
     {
       X = 0,
       Y = 0
     };
-    
-    _king.SetScale(4f,4f);
-    _king.AddAnimation("idle", new FrameRange(1, 0),4, true);
-    _king.AddAnimation("walk", new FrameRange(1,5),4,true);
+
+    _king.SetScale(4f, 4f);
+    _king.AddAnimation("idle", new FrameRange(1, 0), 4, true);
+    _king.AddAnimation("walk", new FrameRange(1, 5), 4, true);
     // TODO: use this.Content to load your game content here
   }
 
   protected override void Update(GameTime gameTime)
   {
-
     var newKeyboardState = Keyboard.GetState();
-    
-    
+
+
     _king.Update(gameTime);
     _witch.Update(gameTime);
-  //  _witch.Rotation += 0.01f;
+    //  _witch.Rotation += 0.01f;
     if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
         Keyboard.GetState().IsKeyDown(Keys.Escape))
       Exit();
 
-    if (Keyboard.GetState().IsKeyDown(Keys.Space))
+    if (InputMap.IsPressed("action"))
     {
-      
-      _witch.SetScale(4f,4f);
+      _witch.SetScale(4f, 4f);
       _king.Play("idle");
     }
 
@@ -91,9 +89,8 @@ public class Game1 : SceneBase
         _king.Resume();
       }
       */
-      
-      
     }
+
     base.Update(gameTime);
   }
 
@@ -101,8 +98,8 @@ public class Game1 : SceneBase
   {
     GraphicsDevice.Clear(Color.CornflowerBlue);
     _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-    _witch.Draw(_spriteBatch,gameTime);
-    _king.Draw(_spriteBatch,gameTime);
+    _witch.Draw(_spriteBatch, gameTime);
+    _king.Draw(_spriteBatch, gameTime);
     _spriteBatch.End();
     // TODO: Add your drawing code here
     base.Draw(gameTime);

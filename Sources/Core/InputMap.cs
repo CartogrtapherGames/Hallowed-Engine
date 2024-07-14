@@ -12,7 +12,7 @@ public static class InputMap
 {
 // for the moment it works as a basic class im to tired blegh
 
-  private static Dictionary<string, List<AbstractKey>> _actions;
+  private static Dictionary<string, List<AbstractKey>> _actions = new();
 
   private static KeyboardState _oldState;
   private static KeyboardState _newState;
@@ -137,7 +137,7 @@ public static class InputMap
       {
         case InputType.Keyboard:
         {
-          Keys key = (Keys)input.Index;
+          var key = (Keys)input.Index;
           if (GetState().IsKeyDown(key))
           {
             return true;
@@ -147,7 +147,7 @@ public static class InputMap
         }
         case InputType.Gamepad:
         {
-          Buttons button = (Buttons)input.Index;
+          var button = (Buttons)input.Index;
           if (GetGamepadState().IsButtonDown(button))
           {
             return true;
