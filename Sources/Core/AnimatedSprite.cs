@@ -48,8 +48,9 @@ public class AnimatedSprite : Sprite
   }
 
   // todo : improve the performance? I dunno I feel theres some kind of bootlegging happening
-  public AnimatedSprite(Texture2D texture, Area2D frameSize, Point firstFrame, int framerate = 8): base(texture)
+  public AnimatedSprite(Texture2D texture, Area2D frameSize, Point firstFrame, int framerate = 8)
   {
+    Texture = texture;
     _framerate = framerate;
     _frameSize = frameSize;
     var x = frameSize.Width * firstFrame.X;

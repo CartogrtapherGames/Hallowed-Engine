@@ -1,4 +1,5 @@
 ﻿using System;
+using Hallowed.Core.Display;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -7,20 +8,22 @@ namespace Hallowed.Core;
 /// <summary>
 /// Represents a sprite that can be rendered on the screen.
 /// </summary>
-public class Sprite : IDisposable
+public class Sprite : IDisposable, IRenderableChild
 {
   private Color _color;
   private Vector2 _position;
   private Vector2 _scale;
   private Texture2D _texture;
-  
 
-  public Sprite(Texture2D texture)
+  private Vector2 _anchor;
+
+  public Sprite()
   {
-    _texture = texture;
     _position = new Vector2();
-    _scale = new Vector2(1,1);
+    _scale = new Vector2(1, 1);
     _color = Color.White;
+    Rotation = 0;
+    _anchor = new Vector2(0, 0);
   }
 
   /// <summary>
@@ -57,6 +60,19 @@ public class Sprite : IDisposable
   }
 
   /// <summary>
+  /// shorthand function to set the sprite anchor.
+  /// calling the function without parameters will reset its anchor to (0,0)
+  /// </summary>
+  /// <param name="x"></param>
+  /// <param name="y"></param>
+  public void SetAnchor(float x = 0, float y = 0)
+  {
+    _anchor.X = x;
+    _anchor.Y = y;
+  }
+  
+
+  /// <summary>
   /// draw the sprite on screen.
   /// Its important to call this in between a spriteBatch in the main class.
   /// </summary>
@@ -64,12 +80,33 @@ public class Sprite : IDisposable
   /// <param name="delta"></param>
   public virtual void Draw(SpriteBatch batch, GameTime delta)
   {
-    batch.Draw(_texture,Rect,_color);
+    const SpriteEffects effects = SpriteEffects.None;
+    batch.Draw(
+      texture: _texture,
+      destinationRectangle: Rect,
+      sourceRectangle: null,
+      color: _color,
+      rotation: Rotation,
+      origin: Origin,
+      effects: effects,
+      layerDepth: 0f
+    );
   }
 
+  /// <summary>
+  /// Update the sprite movement and such. 
+  /// </summary>
+  /// <param name="delta"></param>
   public virtual void Update(GameTime delta)
   {
-    
+  }
+  
+  /// <summary>
+  /// Dispose the sprite and its texture
+  /// </summary>
+  public virtual void Dispose()
+  {
+    _texture?.Dispose();
   }
 
   #region field
@@ -79,9 +116,9 @@ public class Sprite : IDisposable
   /// </summary>
   public Texture2D Texture
   {
-    get => _texture; 
+    get => _texture;
     // TODO : maybe make sure to force a refresh on the texture?
-    set=> _texture = value; 
+    set => _texture = value;
   }
 
   /// <summary>
@@ -104,7 +141,6 @@ public class Sprite : IDisposable
       var scaleX = Math.Abs(_scale.X);
       var result = scaleX * _texture.Width;
       return (int)result;
-
     }
   }
 
@@ -152,7 +188,7 @@ public class Sprite : IDisposable
   /// <summary>
   /// Represent the rectangle of the sprite
   /// </summary>
-  public Rectangle Rect => new((int)_position.X, (int)_position.Y, Width,Height);
+  public Rectangle Rect => new((int)_position.X, (int)_position.Y, Width, Height);
 
   /// <summary>
   /// Represent the rectangle frame. 
@@ -161,16 +197,13 @@ public class Sprite : IDisposable
   /// Do take note that source rect is meant to be used as the frame rect when doing animated sprite
   /// in the base class Sprite its only added for conveniences.
   /// </remarks>
-  public virtual Rectangle SourceRect
-  {
-    get;
-    protected set;
-  }
+  public virtual Rectangle SourceRect { get; protected set; }
 
   /// <summary>
   /// the sprite X coordinates
   /// </summary>
-  public float X {
+  public float X
+  {
     get => _position.X;
     set => _position.X = value;
   }
@@ -183,11 +216,32 @@ public class Sprite : IDisposable
     get => _position.Y;
     set => _position.Y = value;
   }
-  
-  #endregion
 
-  public virtual void Dispose()
+  /// <summary>
+  /// the sprite anchor where the sprite will
+  /// base its position and rotation from.
+  /// </summary>
+  /// <remarks>
+  /// the value of the anchor is clamped from 0f to 1f and scales
+  /// with the realWidth and RealHeight of the texture
+  /// </remarks>
+  public Vector2 Anchor
   {
-    _texture?.Dispose();
+    get => _anchor;
+    set
+    {
+      var x = Math.Clamp(value.X, 0f, 1f);
+      var y = Math.Clamp(value.Y, 0f, 1f);
+      _anchor = new Vector2(x, y);
+    }
   }
+
+  /// <summary>
+  /// the sprite origin. which is set via the realWidth and anchor of the sprite
+  /// </summary>
+  protected virtual Vector2 Origin => new(RealWidth * _anchor.X, RealHeight * _anchor.Y);
+
+  public float Rotation { get; set; }
+
+  #endregion
 }

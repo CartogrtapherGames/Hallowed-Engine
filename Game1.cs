@@ -1,21 +1,20 @@
 ﻿
 using System.Diagnostics;
 using Hallowed.Core;
+using Hallowed.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Hallowed;
 
-public class Game1 : Game
+public class Game1 : SceneBase
 {
   private GraphicsDeviceManager _graphics;
   private SpriteBatch _spriteBatch;
   private Sprite _witch;
   private AnimatedSprite _king;
-
-
-  private KeyboardState oldKeyboardState;
+  
   public Game1()
   {
     _graphics = new GraphicsDeviceManager(this);
@@ -26,7 +25,11 @@ public class Game1 : Game
   protected override void Initialize()
   {
     // TODO: Add your initialization logic here
-
+    _witch = new Sprite()
+    {
+      X = 100,
+      Y = 100,
+    };
     base.Initialize();
   }
 
@@ -36,11 +39,7 @@ public class Game1 : Game
     
     _spriteBatch = new SpriteBatch(GraphicsDevice);
     var texture = Content.Load<Texture2D>("witch");
-    _witch = new Sprite(texture)
-    {
-      X = 100,
-      Y = 100
-    };
+    _witch.Texture = texture;
 
     var kingTexture = Content.Load<Texture2D>("king");
     var frameSize = new Area2D(32, 32);
@@ -62,7 +61,10 @@ public class Game1 : Game
 
     var newKeyboardState = Keyboard.GetState();
     
+    
     _king.Update(gameTime);
+    _witch.Update(gameTime);
+  //  _witch.Rotation += 0.01f;
     if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
         Keyboard.GetState().IsKeyDown(Keys.Escape))
       Exit();
@@ -74,9 +76,10 @@ public class Game1 : Game
       _king.Play("idle");
     }
 
-    if (newKeyboardState.IsKeyDown(Keys.LeftShift) & oldKeyboardState.IsKeyUp(Keys.LeftShift)) // TODO : fix that shit because jesus christ its way to much conditions
+    if (InputMap.IsTriggered(Keys.LeftShift)) // TODO : fix that shit because jesus christ its way to much conditions
     {
       _king.Play("walk");
+      Debug.WriteLine("Ping");
       /*
       if (_king.IsPlaying())
       {
@@ -88,12 +91,9 @@ public class Game1 : Game
         _king.Resume();
       }
       */
-
-
+      
+      
     }
-    // TODO: Add your update logic here
-
-    oldKeyboardState = newKeyboardState;
     base.Update(gameTime);
   }
 
