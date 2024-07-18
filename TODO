@@ -1,3 +1,20 @@
 ﻿
-* Implements a new keyboard system (it is kinda implemented?)
+* Implements a new keyboard system (it is kinda implemented?) // IMPLEMENTED
+* Implement the graphic system // IMPLEMENTED
+
 * Implement the Object system
+* Implement SceneManager -> https://gamedev.stackexchange.com/questions/108518/monogame-screen-transition-with-fading
+* Implement Camera
+* implement Tilemap Loading
+
+
+Hallowed is supposed to abstract many of the system and has a philosophy : 
+
+Avoid overly complicated system. It should feel you are cutting work not adding yourself more work. 
+
+2. it should also be not locking you to much in one type of workflow. if you need you should be able to break of 
+the normal workflow. 
+
+TODO : maybe invest in the idea of learning Service?
+
+

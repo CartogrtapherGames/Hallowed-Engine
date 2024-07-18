@@ -4,19 +4,132 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
+#nullable disable
 namespace Hallowed.Core;
 
-#nullable disable
-// TODO : make it not a static class later? since it would make senses that the keyboard is bound to the scene class and passed along their object
+/// <summary>
+/// The wrapper class that map and bind keyboard and gamepad input into a
+/// collections of actions
+/// </summary>
+/// <typeparam name="T">the enum where the input are bound too</typeparam>
 public class InputMap<T> where T : System.Enum
 {
-// for the moment it works as a basic class im to tired blegh
-
   private readonly Dictionary<T, List<AbstractKey>> _actions = new();
-
-  private KeyboardState _oldState;
+  private GamePadState _newGamePadState;
   private KeyboardState _newState;
+  private GamePadState _oldGamePadState;
+  private KeyboardState _oldState;
 
+  public bool IsPressed(T name)
+  {
+    if (!_actions.ContainsKey(name)) throw new Exception($"the action {name} does not exists!");
+    var action = _actions[name];
+    foreach (var input in action)
+    {
+      switch (input.Type)
+      {
+        case InputType.Keyboard:
+        {
+          var key = (Keys)input.Index;
+          if (GetState().IsKeyDown(key))
+          {
+            return true;
+          }
+
+          break;
+        }
+        case InputType.Gamepad:
+        {
+          var button = (Buttons)input.Index;
+          if (GetGamepadState().IsButtonDown(button))
+          {
+            return true;
+          }
+
+          break;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public bool IsPressed(Keys key)
+  {
+    return GetState().IsKeyDown(key);
+  }
+
+
+  public bool IsUp(T name)
+  {
+    if (!_actions.ContainsKey(name)) throw new Exception($"the action {name} does not exists!");
+    var action = _actions[name];
+    foreach (var input in action)
+    {
+      switch (input.Type)
+      {
+        case InputType.Keyboard:
+          var key = (Keys)input.Index;
+          return GetState().IsKeyUp(key);
+          break;
+        case InputType.Gamepad:
+          var button = (Buttons)input.Index;
+          return GetGamepadState().IsButtonUp(button);
+      }
+    }
+
+    return false;
+  }
+
+  public bool IsUp(Keys key)
+  {
+    return GetState().IsKeyUp(key);
+  }
+
+  public bool IsTriggered(T name)
+  {
+    if (!_actions.ContainsKey(name)) throw new Exception($"the action {name} does not exists!");
+    var action = _actions[name];
+    foreach (var input in action)
+    {
+      switch (input.Type)
+      {
+        case InputType.Keyboard:
+          var key = (Keys)input.Index;
+          return (GetState().IsKeyDown(key) && _oldState.IsKeyUp(key));
+          break;
+        case InputType.Gamepad:
+          var button = (Buttons)input.Index;
+          return (GetGamepadState().IsButtonDown(button) && _oldGamePadState.IsButtonUp(button));
+      }
+    }
+
+    return false;
+  }
+
+  public bool IsTriggered(Keys key)
+  {
+    return GetState().IsKeyDown(key) && _oldState.IsKeyUp(key);
+  }
+
+  public void Update()
+  {
+    _newState = GetState();
+    _oldState = _newState;
+    _newGamePadState = GetGamepadState();
+    _oldGamePadState = _newGamePadState;
+  }
+
+  private static KeyboardState GetState() => PlatformGetState();
+  private GamePadState GetGamepadState() => GamePad.GetState(PlayerIndex.One);
+
+  private static KeyboardState PlatformGetState()
+  {
+    return Keyboard.GetState();
+  }
+
+
+  #region Binding
 
   public void BindAction(T name, Keys key)
   {
@@ -108,7 +221,7 @@ public class InputMap<T> where T : System.Enum
     else
     {
       var list = ConvertToList(buttons, InputType.Gamepad);
-      _actions.TryAdd(name, list);
+      _actions.Add(name, list);
     }
   }
 
@@ -127,68 +240,7 @@ public class InputMap<T> where T : System.Enum
     }
   }
 
-  public bool IsPressed(T name)
-  {
-    if (!_actions.ContainsKey(name)) throw new Exception($"the action {name} does not exists!");
-    var action = _actions[name];
-    foreach (var input in action)
-    {
-      switch (input.Type)
-      {
-        case InputType.Keyboard:
-        {
-          var key = (Keys)input.Index;
-          if (GetState().IsKeyDown(key))
-          {
-            return true;
-          }
-
-          break;
-        }
-        case InputType.Gamepad:
-        {
-          var button = (Buttons)input.Index;
-          if (GetGamepadState().IsButtonDown(button))
-          {
-            return true;
-          }
-
-          break;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  public bool IsPressed(Keys key)
-  {
-    return GetState().IsKeyDown(key);
-  }
-
-  public bool IsUp(Keys key)
-  {
-    return GetState().IsKeyUp(key);
-  }
-
-  public bool IsTriggered(Keys key)
-  {
-    return GetState().IsKeyDown(key) && _oldState.IsKeyUp(key);
-  }
-
-  public void Update()
-  {
-    _newState = GetState();
-    _oldState = _newState;
-  }
-
-  private static KeyboardState GetState() => PlatformGetState();
-  private GamePadState GetGamepadState() => GamePad.GetState(PlayerIndex.One);
-
-  private static KeyboardState PlatformGetState()
-  {
-    return Keyboard.GetState();
-  }
+  #endregion
 
   #region ListConverter
 

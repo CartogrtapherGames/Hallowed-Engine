@@ -8,4 +8,5 @@ public interface IRenderableChild
   public void Update(GameTime delta);
   public void Draw(SpriteBatch batch, GameTime delta);
   public void Dispose();
+  public bool Enabled { get; set; }
 }

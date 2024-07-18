@@ -9,14 +9,12 @@ namespace Hallowed;
 
 public class Game1 : SceneBase
 {
-  private GraphicsDeviceManager _graphics;
   private SpriteBatch _spriteBatch;
   private Sprite _witch;
   private AnimatedSprite _king;
 
   public Game1()
   {
-    _graphics = new GraphicsDeviceManager(this);
     Content.RootDirectory = "Content";
     IsMouseVisible = true;
   }
@@ -28,6 +26,7 @@ public class Game1 : SceneBase
     {
       X = 100,
       Y = 100,
+      Anchor = new Vector2(0.5f, 0.5f)
     };
     base.Initialize();
     InputMap.BindAction(PlayerInput.Space, Keys.Space);
@@ -68,10 +67,16 @@ public class Game1 : SceneBase
         Keyboard.GetState().IsKeyDown(Keys.Escape))
       Exit();
 
-    if (InputMap.IsPressed(PlayerInput.Space))
+    if (InputMap.IsTriggered(PlayerInput.Space))
     {
       _witch.SetScale(4f, 4f);
+      _witch.Rotation += 45;
       _king.Play("idle");
+    }
+
+    if (InputMap.IsPressed(Keys.D))
+    {
+      _witch.X += 10;
     }
 
     if (InputMap.IsTriggered(Keys.LeftShift)) // TODO : fix that shit because jesus christ its way to much conditions
@@ -103,5 +108,10 @@ public class Game1 : SceneBase
     _spriteBatch.End();
     // TODO: Add your drawing code here
     base.Draw(gameTime);
+  }
+
+  protected override void Dispose(bool disposing)
+  {
+    base.Dispose(disposing);
   }
 }

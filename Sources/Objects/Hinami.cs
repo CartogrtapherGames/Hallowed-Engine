@@ -1,20 +1,19 @@
 ﻿using Hallowed.Core;
+using Hallowed.Core.Display;
 using Hallowed.Core.Objects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Hallowed.Objects;
 
-public class Hinami: ObjectBase
+public class Hinami : ObjectBase, IRenderableChild
 {
-
-  
   private AnimatedSprite _sprite;
 
-  public Hinami(): base()
+  public Hinami() : base()
   {
-    
   }
+
   public override void Update(GameTime delta)
   {
     throw new System.NotImplementedException();
@@ -22,7 +21,7 @@ public class Hinami: ObjectBase
 
   public override void Draw(SpriteBatch batch, GameTime delta)
   {
-    base.Draw(batch, delta);
-    
   }
+
+  protected override Vector2 Origin { get; set; }
 }

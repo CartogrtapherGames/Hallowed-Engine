@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Hallowed.Core;
 using Hallowed.Core.Display;
 using Microsoft.Xna.Framework;
@@ -11,16 +12,26 @@ public enum PlayerInput
   Space
 }
 
+/// <summary>
+/// The abstract class that shape a scene in the game
+/// it offers many abstractions and functionality to help scene rendering.
+/// It also offers a child tree rendering system
+/// </summary>
 public abstract class SceneBase : Game
 {
-  protected List<IRenderableChild> _children = new List<IRenderableChild>();
+  protected static SceneBase Instance = (SceneBase)null;
 
-  protected GraphicsDeviceManager Graphics;
+  protected readonly List<IRenderableChild> Children = new();
+
   protected SpriteBatch SpriteBatch;
+
+  // TODO fix that for later
   protected InputMap<PlayerInput> InputMap;
 
   protected SceneBase()
   {
+    Instance = this;
+    Graphics.Init(Instance);
   }
 
   protected override void Initialize()
@@ -44,32 +55,51 @@ public abstract class SceneBase : Game
   protected override void Update(GameTime gameTime)
   {
     InputMap.Update();
+    foreach (var child in Children.Where(child => child.Enabled))
+    {
+      child.Update(gameTime);
+    }
+
     base.Update(gameTime);
   }
 
   protected override void Draw(GameTime gameTime)
   {
     SpriteBatch.Begin();
-    foreach (var child in _children) child.Draw(SpriteBatch, gameTime);
+    foreach (var child in Children.Where(child => child.Enabled))
+    {
+      child.Draw(SpriteBatch, gameTime);
+    }
+
     SpriteBatch.End();
+  }
+
+  protected override void Dispose(bool disposing)
+  {
+    foreach (var child in Children)
+    {
+      child.Dispose();
+    }
+
+    base.Dispose(disposing);
   }
 
   protected void AddChild(IRenderableChild child)
   {
-    _children.Add(child);
+    Children.Add(child);
   }
 
   protected void AddChild(IRenderableChild[] children)
   {
     foreach (var child in children)
     {
-      _children.Add(child);
+      Children.Add(child);
     }
   }
 
   protected void RemoveChild(IRenderableChild child)
   {
-    _children.Remove(child);
+    Children.Remove(child);
     child.Dispose();
   }
 }

@@ -17,6 +17,8 @@ public class Sprite : IDisposable, IRenderableChild
 
   private Vector2 _anchor;
 
+  private bool[] _mirror;
+
   public Sprite()
   {
     _position = new Vector2();
@@ -24,6 +26,8 @@ public class Sprite : IDisposable, IRenderableChild
     _color = Color.White;
     Rotation = 0;
     _anchor = new Vector2(0, 0);
+    // x,y  in this case we're doing an array as its optimized and small and we dont need a big data structure
+    _mirror = new bool[2] { false, false };
   }
 
   /// <summary>
@@ -70,7 +74,7 @@ public class Sprite : IDisposable, IRenderableChild
     _anchor.X = x;
     _anchor.Y = y;
   }
-  
+
 
   /// <summary>
   /// draw the sprite on screen.
@@ -80,7 +84,7 @@ public class Sprite : IDisposable, IRenderableChild
   /// <param name="delta"></param>
   public virtual void Draw(SpriteBatch batch, GameTime delta)
   {
-    const SpriteEffects effects = SpriteEffects.None;
+    SpriteEffects effects = GetSpriteEffects();
     batch.Draw(
       texture: _texture,
       destinationRectangle: Rect,
@@ -100,7 +104,13 @@ public class Sprite : IDisposable, IRenderableChild
   public virtual void Update(GameTime delta)
   {
   }
-  
+
+  public void Flip(bool horizontal = false, bool vertical = false)
+  {
+    _mirror[0] = horizontal;
+    _mirror[1] = vertical;
+  }
+
   /// <summary>
   /// Dispose the sprite and its texture
   /// </summary>
@@ -109,7 +119,31 @@ public class Sprite : IDisposable, IRenderableChild
     _texture?.Dispose();
   }
 
+  private SpriteEffects GetSpriteEffects()
+  {
+    if (_mirror[0] && _mirror[1])
+    {
+      return SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically;
+    }
+
+    else if (_mirror[0])
+    {
+      return SpriteEffects.FlipHorizontally;
+    }
+
+    else if (_mirror[1])
+    {
+      return SpriteEffects.FlipVertically;
+    }
+    else
+    {
+      return SpriteEffects.None;
+    }
+  }
+
   #region field
+
+  public bool Enabled { get; set; } = true;
 
   /// <summary>
   /// The sprite texture
@@ -234,6 +268,26 @@ public class Sprite : IDisposable, IRenderableChild
       var y = Math.Clamp(value.Y, 0f, 1f);
       _anchor = new Vector2(x, y);
     }
+  }
+
+  /// <summary>
+  /// set the value of the sprite if its flipped or not in the X-axis
+  /// false = not flipped
+  /// </summary>
+  public bool MirrorX
+  {
+    get => _mirror[0];
+    set => _mirror[0] = value;
+  }
+
+  /// <summary>
+  /// set the value of the sprite if its flipped or not in the Y-axis
+  /// false = not flipped
+  /// </summary>
+  public bool MirrorY
+  {
+    get => _mirror[1];
+    set => _mirror[1] = value;
   }
 
   /// <summary>
