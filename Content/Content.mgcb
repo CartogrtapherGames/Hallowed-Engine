@@ -25,6 +25,9 @@
 /processorParam:TextureFormat=Color
 /build:characters.png;king.png
 
+#begin Test.json
+/copy:Test.json
+
 #begin Witch1.png
 /importer:TextureImporter
 /processor:TextureProcessor

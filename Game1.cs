@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using Hallowed.Core;
 using Hallowed.Scenes;
 using Microsoft.Xna.Framework;
@@ -53,6 +54,10 @@ public class Game1 : SceneBase
     _king.AddAnimation("idle", new FrameRange(1, 0), 4, true);
     _king.AddAnimation("walk", new FrameRange(1, 5), 4, true);
     // TODO: use this.Content to load your game content here
+
+    var url = @"Content/Test.json";
+    var something = File.ReadAllText(url);
+    Debug.WriteLine(something);
   }
 
   protected override void Update(GameTime gameTime)
