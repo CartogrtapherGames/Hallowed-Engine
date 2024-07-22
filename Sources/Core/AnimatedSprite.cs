@@ -199,7 +199,7 @@ public class AnimatedSprite : Sprite
 
   public override void Update(GameTime delta)
   {
-    if (!_isPlaying && !_isCompleted) return;
+    if (!_isPlaying) return;
     var anim = Animation(_currentAnimation);
     var sequence = BuildFrameSequences(anim);
     if (anim.Loop)
@@ -230,20 +230,18 @@ public class AnimatedSprite : Sprite
   private void ProcessAnimation(Point[] sequence, GameTime delta)
   {
     var frameTotalTime = 1f / _framerate;
+
     _animationTimer += (float)delta.ElapsedGameTime.TotalSeconds;
 
-
     if (!(_animationTimer >= frameTotalTime)) return;
-    _frame = (_frame + 1);
-    if (_frame < sequence.Length)
-    {
-      SourceRect = new Rectangle(sequence[_frame].X, sequence[_frame].Y, _frameSize.Width, _frameSize.Height);
-    }
+    _frame = (_frame + 1) % sequence.Length;
+    SourceRect = new Rectangle(sequence[_frame].X, sequence[_frame].Y, _frameSize.Width, _frameSize.Height);
 
-    if (_frame > sequence.Length)
+    _animationTimer = 0;
+    if (_frame == sequence.Length)
     {
       Completed?.Invoke();
-      //   Reset();
+      Reset();
     }
   }
 

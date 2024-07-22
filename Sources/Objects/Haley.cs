@@ -17,7 +17,7 @@ public class Haley : CharacterBase
   public float MovementSpeed = 300f;
 
   private InputMap<PlayerInput> _inputMap;
-  private bool idling = false;
+  private bool idling = true;
 
   public Haley(HaleyDataModel data, InputMap<PlayerInput> inputMap) : base(data)
   {
