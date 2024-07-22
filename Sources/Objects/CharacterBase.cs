@@ -1,31 +1,71 @@
-﻿using Hallowed.Core;
-using Hallowed.Core.Display;
+﻿using System;
+using Hallowed.Core;
 using Hallowed.Core.Objects;
+using Hallowed.Data;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Hallowed.Objects;
 
+public enum Direction
+{
+  Top,
+  Left,
+  Right,
+  Bottom
+}
+
 public abstract class CharacterBase : ObjectBase
 {
-  public Sprite Sprite;
-  protected override Vector2 Origin { get; set; }
+  public AnimatedSprite Sprite;
 
-  protected CharacterBase()
+  public Direction Direction = Direction.Left;
+
+  protected CharacterBase(DataModelBase data)
   {
+    var frameSize = new Area2D(data.FrameSize.Width, data.FrameSize.Height);
+    var firstFrame = new Point(data.StartFrame.X, data.StartFrame.Y);
+    Sprite = new AnimatedSprite(frameSize, firstFrame);
+    Setup(data);
+  }
+
+  public void SetTexture(Texture2D texture2D)
+  {
+    Sprite.Texture = texture2D;
+  }
+
+  protected virtual void Setup(DataModelBase data)
+  {
+    SetAnimations(data.Animations);
+  }
+
+  protected void SetAnimations(AnimationModel[] animations)
+  {
+    foreach (var animation in animations)
+    {
+      Sprite.AddAnimation(animation.Key, animation.FrameRange, animation.FrameCount, animation.Loop);
+    }
+  }
+
+
+  protected override void RefreshTransform()
+  {
+    Sprite.SetPos(X, Y);
+    Sprite.SetAnchor(Pivot.X, Pivot.Y);
   }
 
   public override void Update(GameTime delta)
   {
-    // for the moment I will put that there but consider moving it up to the base class
-    // if not enabled we do not allow any updates
-    if (!Enabled) return;
-    Sprite.SetPos(X, Y);
-    Sprite.SetAnchor(Pivot.X, Pivot.Y);
+    Sprite.Update(delta);
   }
 
   public override void Draw(SpriteBatch batch, GameTime delta)
   {
     Sprite.Draw(batch, delta);
+  }
+
+  public override void Dispose()
+  {
+    Sprite.Dispose();
   }
 }

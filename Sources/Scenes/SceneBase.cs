@@ -2,15 +2,11 @@
 using System.Linq;
 using Hallowed.Core;
 using Hallowed.Core.Display;
+using Hallowed.Objects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Hallowed.Scenes;
-
-public enum PlayerInput
-{
-  Space
-}
 
 /// <summary>
 /// The abstract class that shape a scene in the game
@@ -32,11 +28,11 @@ public abstract class SceneBase : Game
   {
     Instance = this;
     Graphics.Init(Instance);
+    InitializeInput();
   }
 
   protected override void Initialize()
   {
-    InitializeInput();
     base.Initialize();
   }
 

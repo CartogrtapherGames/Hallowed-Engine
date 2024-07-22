@@ -18,6 +18,11 @@ public class AssetManager : IDisposable
 
   private string _rootDirectory = string.Empty;
 
+  public string RootDirectory
+  {
+    get => _rootDirectory;
+    set => _rootDirectory = value;
+  }
 
   public AssetManager(GraphicsDevice graphicsDevice)
   {
@@ -70,7 +75,7 @@ public class AssetManager : IDisposable
     Texture2D texture;
     try
     {
-      texture = Texture2D.FromFile(_graphicsDevice, @$"{_rootDirectory}/{assetPath}");
+      texture = Texture2D.FromFile(_graphicsDevice, $"{_rootDirectory}/{assetPath}");
     }
     catch (Exception e)
     {

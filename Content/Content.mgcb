@@ -23,7 +23,10 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:characters.png;king.png
+/build:characters.png;king1.png
+
+#begin Data/Player.json
+/copy:Data/Player.json
 
 #begin Test.json
 /copy:Test.json
@@ -39,4 +42,16 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Witch1.png;Witch.png
+
+#begin yula.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:yula.png;Yula.png
 

@@ -119,7 +119,7 @@ public class Sprite : IDisposable, IRenderableChild
     _texture?.Dispose();
   }
 
-  private SpriteEffects GetSpriteEffects()
+  protected SpriteEffects GetSpriteEffects()
   {
     if (_mirror[0] && _mirror[1])
     {

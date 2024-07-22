@@ -6,6 +6,7 @@
 * Implement SceneManager -> https://gamedev.stackexchange.com/questions/108518/monogame-screen-transition-with-fading
 * Implement Camera
 * implement Tilemap Loading
+* Implement Movement
 
 
 Hallowed is supposed to abstract many of the system and has a philosophy : 

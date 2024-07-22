@@ -11,10 +11,9 @@ namespace Hallowed.Core;
 /// </summary>
 public class AnimatedSprite : Sprite
 {
-
   public event Action Completed;
   private readonly HashSet<Action> _handlers = new HashSet<Action>();
-  
+
   private readonly Dictionary<string, AnimationObject> _animations = new();
   private readonly Area2D _frameSize;
   private readonly int _framerate;
@@ -23,8 +22,8 @@ public class AnimatedSprite : Sprite
   private bool _isCompleted;
   private string _currentAnimation;
   private float _animationTimer;
-  
-  
+
+
   public sealed override Rectangle SourceRect { get; protected set; }
 
   public override int Width
@@ -47,6 +46,8 @@ public class AnimatedSprite : Sprite
     }
   }
 
+  protected override Vector2 Origin => new(SourceRect.Width * Anchor.X, SourceRect.Height * Anchor.Y);
+
   // todo : improve the performance? I dunno I feel theres some kind of bootlegging happening
   public AnimatedSprite(Texture2D texture, Area2D frameSize, Point firstFrame, int framerate = 8)
   {
@@ -56,14 +57,26 @@ public class AnimatedSprite : Sprite
     var x = frameSize.Width * firstFrame.X;
     var y = frameSize.Height * firstFrame.Y;
     SourceRect = new Rectangle(x, y, _frameSize.Width, frameSize.Height);
-    
+
     _currentAnimation = "";
     _frame = 0;
     _isPlaying = false;
     _animationTimer = 0f;
   }
 
+  public AnimatedSprite(Area2D frameSize, Point firstFrame, int framerate = 8)
+  {
+    _framerate = framerate;
+    _frameSize = frameSize;
+    var x = frameSize.Width * firstFrame.X;
+    var y = frameSize.Height * firstFrame.Y;
+    SourceRect = new Rectangle(x, y, _frameSize.Width, frameSize.Height);
 
+    _currentAnimation = "";
+    _frame = 0;
+    _isPlaying = false;
+    _animationTimer = 0f;
+  }
 
   /// <summary>
   /// return the numbers of columns the image contains.
@@ -85,7 +98,7 @@ public class AnimatedSprite : Sprite
 
   public void AddAnimation(string name, FrameRange range, int frameCount = 4, bool loop = false)
   {
-    if(_animations.ContainsKey(name))
+    if (_animations.ContainsKey(name))
       throw new Exception("the key " + name + "already exists!");
     var data = new AnimationObject()
     {
@@ -94,7 +107,7 @@ public class AnimatedSprite : Sprite
       FrameCount = frameCount,
       Loop = loop
     };
-    _animations.Add(name,data);
+    _animations.Add(name, data);
     Debug.WriteLine("added " + name);
   }
 
@@ -103,11 +116,13 @@ public class AnimatedSprite : Sprite
     _frame = 0;
     _currentAnimation = "";
     _isCompleted = false;
-    _isPlaying = true;
+    _isPlaying = false;
     _animationTimer = 0;
   }
+
   public AnimatedSprite Play(string name)
   {
+    if (_currentAnimation == name) return this; // in the case the animation is already playing.
     if (!_animations.ContainsKey(name)) throw new Exception($"The animation {name} does not exist!");
     Reset();
     _currentAnimation = name;
@@ -117,23 +132,24 @@ public class AnimatedSprite : Sprite
 
   public AnimatedSprite OnCompleted(Action completedAction)
   {
-
     if (_handlers.Add(completedAction))
     {
       Completed += completedAction;
     }
+
     _isCompleted = true;
     Reset();
     return this;
   }
-  
-  public void Stop( bool reset = false)
+
+  public void Stop(bool reset = false)
   {
     if (reset)
     {
       _isCompleted = true;
       Completed?.Invoke();
     }
+
     _isPlaying = false;
   }
 
@@ -151,14 +167,23 @@ public class AnimatedSprite : Sprite
   {
     return _isCompleted;
   }
-  
+
   public override void Draw(SpriteBatch batch, GameTime delta)
   {
-
-    batch.Draw(Texture,Rect,SourceRect,Color);
+    SpriteEffects effects = GetSpriteEffects();
+    batch.Draw(
+      texture: Texture,
+      destinationRectangle: Rect,
+      sourceRectangle: SourceRect,
+      color: Color,
+      rotation: Rotation,
+      origin: Origin,
+      effects: effects,
+      layerDepth: 0f
+    );
   }
 
- 
+
   public override void Dispose()
   {
     base.Dispose();
@@ -167,13 +192,14 @@ public class AnimatedSprite : Sprite
     {
       Completed -= handle;
     }
+
     _handlers.Clear();
   }
 
 
   public override void Update(GameTime delta)
   {
-    if (!_isPlaying) return;
+    if (!_isPlaying && !_isCompleted) return;
     var anim = Animation(_currentAnimation);
     var sequence = BuildFrameSequences(anim);
     if (anim.Loop)
@@ -182,7 +208,7 @@ public class AnimatedSprite : Sprite
     }
     else
     {
-      ProcessAnimation(sequence,delta);
+      ProcessAnimation(sequence, delta);
     }
   }
 
@@ -195,22 +221,29 @@ public class AnimatedSprite : Sprite
     _animationTimer += (float)delta.ElapsedGameTime.TotalSeconds;
 
     if (!(_animationTimer >= frameTotalTime)) return;
-    
+
     _frame = (_frame + 1) % sequence.Length;
     SourceRect = new Rectangle(sequence[_frame].X, sequence[_frame].Y, _frameSize.Width, _frameSize.Height);
     _animationTimer = 0;
   }
 
-  private void ProcessAnimation(Point[] sequences, GameTime delta)
+  private void ProcessAnimation(Point[] sequence, GameTime delta)
   {
     var frameTotalTime = 1f / _framerate;
     _animationTimer += (float)delta.ElapsedGameTime.TotalSeconds;
 
+
     if (!(_animationTimer >= frameTotalTime)) return;
-    if (_frame > sequences.Length)
+    _frame = (_frame + 1);
+    if (_frame < sequence.Length)
+    {
+      SourceRect = new Rectangle(sequence[_frame].X, sequence[_frame].Y, _frameSize.Width, _frameSize.Height);
+    }
+
+    if (_frame > sequence.Length)
     {
       Completed?.Invoke();
-      Reset();
+      //   Reset();
     }
   }
 
@@ -227,7 +260,7 @@ public class AnimatedSprite : Sprite
     {
       var row = anim.Row * _frameSize.Height;
       var column = (anim.Column + i) * _frameSize.Width;
-      sequence[i] = new Point(column,row);
+      sequence[i] = new Point(column, row);
     }
 
     return sequence;

@@ -1,0 +1,34 @@
+﻿{
+  "Id": "HALEY",
+  "DisplayName": "Haley",
+  "GroupId": "Player",
+  "Texture": "Yula",
+  "StartFrame": {
+    "X": 0,
+    "Y": 3
+  },
+  "FrameSize": {
+    "Width": 51,
+    "Height": 103
+  },
+  "Animations": [
+    {
+      "Key": "idle",
+      "FrameRange": {
+        "Row": 3,
+        "Column": 0
+      },
+      "FrameCount": 8,
+      "Loop": true
+    },
+    {
+      "Key": "walk",
+      "FrameRange": {
+        "Row": 1,
+        "Column": 0
+      },
+      "FrameCount": 8,
+      "Loop": false
+    }
+  ]
+}
