@@ -15,9 +15,8 @@ public class ObjectHaley : CharacterBase
 {
   public float MovementSpeed = 300f;
 
-  private InputMap<PlayerInput> _inputMap;
-  private bool idling = true;
-  private HaleyStateManager _stateMachine;
+  private readonly InputMap<PlayerInput> _inputMap;
+  private readonly HaleyStateManager _stateMachine;
 
   public ObjectHaley(HaleyDataModel data, InputMap<PlayerInput> inputMap) : base(data)
   {
@@ -40,6 +39,8 @@ public class ObjectHaley : CharacterBase
 
   public InputMap<PlayerInput> Input => _inputMap;
 
+  // in this case we ensure that we can have an way to access haley stateManager 
+  public HaleyStateManager StateMachine => _stateMachine;
 
   protected override Vector2 Origin { get; set; }
 }

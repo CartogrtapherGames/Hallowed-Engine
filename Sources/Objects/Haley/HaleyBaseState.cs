@@ -30,6 +30,7 @@ public abstract class HaleyBaseState : BaseState<HaleyStates>
 
   public override void ExitState()
   {
+    // here we can play some specific noise etc or even play particles
   }
 
   public override void UpdateState(GameTime delta)
@@ -43,6 +44,7 @@ public abstract class HaleyBaseState : BaseState<HaleyStates>
 
   public override void OnTriggerEnter()
   {
+    // here I need to implement an collission system for this.
   }
 
   public override void OnTriggerStay()
