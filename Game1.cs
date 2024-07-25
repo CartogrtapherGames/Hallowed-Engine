@@ -1,14 +1,12 @@
-﻿using System.Diagnostics;
-using System.IO;
-using Hallowed.Core;
-using Hallowed.Data;
+﻿using Hallowed.Core;
 using Hallowed.Management;
 using Hallowed.Objects;
+using Hallowed.Objects.Haley;
 using Hallowed.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Newtonsoft.Json;
+
 
 namespace Hallowed;
 
@@ -17,7 +15,8 @@ public class Game1 : SceneBase
   private SpriteBatch _spriteBatch;
   private Sprite _witch;
   private AnimatedSprite _king;
-  private Haley _haley;
+  private ObjectHaley _objectHaley;
+
 
   public Game1()
   {
@@ -29,11 +28,11 @@ public class Game1 : SceneBase
   {
     Database.Init();
 
-    _haley = new Haley(Database.HaleyDataModel, InputMap);
-    _haley.Pivot = new Vector2(0.5f, 0f);
-    _haley.X = Graphics.Width * 0.5f;
-    _haley.Y = Graphics.Height * 0.5f;
-    _haley.Sprite.SetScale(4f, 4f);
+    _objectHaley = new ObjectHaley(Database.HaleyDataModel, InputMap);
+    _objectHaley.Pivot = new Vector2(0.5f, 0f);
+    _objectHaley.X = Graphics.Width * 0.5f;
+    _objectHaley.Y = Graphics.Height * 0.5f;
+    _objectHaley.Sprite.SetScale(4f, 4f);
     // TODO: Add your initialization logic here
     _witch = new Sprite()
     {
@@ -58,7 +57,7 @@ public class Game1 : SceneBase
     _spriteBatch = new SpriteBatch(GraphicsDevice);
 
     var haleyTexture = Content.Load<Texture2D>("Yula");
-    _haley.SetTexture(haleyTexture);
+    _objectHaley.SetTexture(haleyTexture);
 
     var texture = Content.Load<Texture2D>("witch");
     _witch.Texture = texture;
@@ -84,11 +83,8 @@ public class Game1 : SceneBase
 
   protected override void Update(GameTime gameTime)
   {
-    // _king.Rotation += 0.01f;
-    // _king.Update(gameTime);
     _witch.Update(gameTime);
-    _haley.Update(gameTime);
-    //  _witch.Rotation += 0.01f;
+    _objectHaley.Update(gameTime);
     if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
         Keyboard.GetState().IsKeyDown(Keys.Escape))
       Exit();
@@ -108,18 +104,6 @@ public class Game1 : SceneBase
     if (InputMap.IsTriggered(Keys.LeftShift))
     {
       _king.Play("walk");
-
-      /*
-      if (_king.IsPlaying())
-      {
-        Debug.WriteLine("ping!");
-        _king.Stop();
-      }
-      else
-      {
-        _king.Resume();
-      }
-      */
     }
 
     base.Update(gameTime);
@@ -131,11 +115,11 @@ public class Game1 : SceneBase
     _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
     _witch.Draw(_spriteBatch, gameTime);
     //  _king.Draw(_spriteBatch, gameTime);
-    _haley.Draw(_spriteBatch, gameTime);
+    _objectHaley.Draw(_spriteBatch, gameTime);
     _spriteBatch.End();
-    // TODO: Add your drawing code here
     base.Draw(gameTime);
   }
+
 
   protected override void Dispose(bool disposing)
   {

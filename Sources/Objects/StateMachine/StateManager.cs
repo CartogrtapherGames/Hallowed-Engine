@@ -1,27 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using Microsoft.Xna.Framework;
 
 namespace Hallowed.Objects.StateMachine;
 
-// TODO : for now every 
+/// <summary>
+/// The abstract class that manage the Object States. 
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public abstract class StateManager<T> where T : Enum
 {
-  protected Dictionary<T, BaseState<T>> States;
+  protected readonly Dictionary<T, BaseState<T>> States = new();
   protected BaseState<T> CurrentState;
 
   protected bool IsTransitioningState = false;
+
 
   public void Initialize()
   {
     CurrentState.EnterState();
   }
 
-  public void Update()
+  protected void AddState(T key, BaseState<T> stateObj)
+  {
+    States.Add(key, stateObj);
+  }
+
+  public void Update(GameTime delta)
   {
     var nextStateKey = CurrentState.GetNextState();
     if (!IsTransitioningState && nextStateKey.Equals(CurrentState.StateKey))
     {
-      CurrentState.UpdateState();
+      CurrentState.UpdateState(delta);
     }
     else if (!IsTransitioningState)
     {
@@ -31,9 +42,12 @@ public abstract class StateManager<T> where T : Enum
 
   public void TransitionToState(T stateKey)
   {
+    IsTransitioningState = true;
     CurrentState.ExitState();
     CurrentState = States[stateKey];
     CurrentState.EnterState();
+    IsTransitioningState = false;
+    Debug.WriteLine(" it is been called?");
   }
 
   // TODO : actually have implementations for colliders...

@@ -234,15 +234,15 @@ public class AnimatedSprite : Sprite
     _animationTimer += (float)delta.ElapsedGameTime.TotalSeconds;
 
     if (!(_animationTimer >= frameTotalTime)) return;
-    _frame = (_frame + 1) % sequence.Length;
-    SourceRect = new Rectangle(sequence[_frame].X, sequence[_frame].Y, _frameSize.Width, _frameSize.Height);
-
-    _animationTimer = 0;
-    if (_frame == sequence.Length)
+    _frame = (_frame + 1);
+    if (_frame >= sequence.Length)
     {
       Completed?.Invoke();
       Reset();
     }
+
+    SourceRect = new Rectangle(sequence[_frame].X, sequence[_frame].Y, _frameSize.Width, _frameSize.Height);
+    _animationTimer = 0;
   }
 
   private AnimationObject Animation(string name)
