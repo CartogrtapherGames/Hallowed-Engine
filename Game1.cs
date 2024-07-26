@@ -1,4 +1,5 @@
-﻿using Hallowed.Core;
+﻿using System.Diagnostics;
+using Hallowed.Core;
 using Hallowed.Management;
 using Hallowed.Objects;
 using Hallowed.Objects.Haley;
@@ -30,6 +31,8 @@ public class Game1 : SceneBase
 
     _background = new Sprite();
     _background.Anchor = new Vector2(0.5f, 0.5f);
+    _background.X = Graphics.Width * 0.5f;
+    _background.Y = Graphics.Height * 0.5f;
 
     _objectHaley = new ObjectHaley(Database.HaleyDataModel, InputMap);
     _objectHaley.X = Graphics.Width * 0.5f;
@@ -81,6 +84,12 @@ public class Game1 : SceneBase
     if (InputMap.IsPressed(Keys.W))
     {
       _background.Y -= 3;
+    }
+
+    if (InputMap.IsTriggered(Keys.Space))
+    {
+      Debug.WriteLine("Real width: " + _background.RealWidth + "," + " real height: " + _background.RealHeight);
+      Debug.WriteLine("Width: " + _background.Width + "," + " Height: " + _background.Height);
     }
 
     base.Update(gameTime);

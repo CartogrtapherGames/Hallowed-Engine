@@ -40,7 +40,7 @@ public class AnimatedSprite : Sprite
   {
     get
     {
-      var scaleX = Math.Abs(Scale.X);
+      var scaleX = Math.Abs(Scale.Y);
       var result = scaleX * _frameSize.Height;
       return (int)result;
     }

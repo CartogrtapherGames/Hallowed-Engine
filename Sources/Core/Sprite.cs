@@ -186,7 +186,7 @@ public class Sprite : IDisposable, IRenderableChild
     get
     {
       var scaleY = Math.Abs(_scale.Y);
-      var result = scaleY * _texture.Width;
+      var result = scaleY * _texture.Height;
       return (int)result;
     }
   }
