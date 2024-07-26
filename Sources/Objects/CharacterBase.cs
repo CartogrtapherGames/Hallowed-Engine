@@ -24,7 +24,7 @@ public abstract class CharacterBase : ObjectBase
   {
     var frameSize = new Area2D(data.FrameSize.Width, data.FrameSize.Height);
     var firstFrame = new Point(data.StartFrame.X, data.StartFrame.Y);
-    Sprite = new AnimatedSprite(frameSize, firstFrame, 8);
+    Sprite = new AnimatedSprite(frameSize, firstFrame, 12);
     Pivot = new Vector2(data.Pivot.X, data.StartFrame.Y);
     Setup(data);
   }
