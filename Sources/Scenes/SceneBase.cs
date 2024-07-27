@@ -2,7 +2,6 @@
 using System.Linq;
 using Hallowed.Core;
 using Hallowed.Core.Display;
-using Hallowed.Objects;
 using Hallowed.Objects.Haley;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
