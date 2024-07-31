@@ -20,6 +20,8 @@ public abstract class CharacterBase : ObjectBase
 
   public Direction Direction = Direction.Left;
 
+  public Rectangle BoundingBox => Sprite.SourceRect;
+
   protected CharacterBase(DataModelBase data)
   {
     var frameSize = new Area2D(data.FrameSize.Width, data.FrameSize.Height);

@@ -7,28 +7,17 @@ namespace Hallowed.Core.Display;
 /// <summary>
 /// The game object class that handle the camera in the world.
 /// </summary>
-public class Camera
+public sealed class Camera
 {
-  public Matrix Transform { get; private set; }
+  public static readonly float minZ = 1f;
+  public static readonly float MaxZ = 2048f;
+  private Vector2 _position;
+  private float _z;
+  private float _baseZ;
 
-  private Area2D _screenSize;
+  private float _aspectRatio;
+  private float _fieldOfView;
 
-  public Camera(int screenWidth, int screenHeight)
-  {
-    _screenSize = new Area2D(screenWidth, screenHeight);
-  }
-
-  public void Follow(CharacterBase target)
-  {
-    var offset = Matrix.CreateTranslation(
-      (float)_screenSize.Width / 2,
-      (float)_screenSize.Height / 2,
-      0
-    );
-    var position = Matrix.CreateTranslation(
-      -target.Sprite.X - ((float)target.Sprite.Width / 2),
-      -target.Sprite.Y + ((float)target.Sprite.Height / 2),
-      0);
-    Transform = position * offset;
-  }
+  private Matrix view;
+  private Matrix proj;
 }

@@ -12,7 +12,7 @@ namespace Hallowed.Objects.StateMachine;
 public abstract class StateManager<T> where T : Enum
 {
   protected readonly Dictionary<T, BaseState<T>> States = new();
-  protected BaseState<T> CurrentState;
+  public BaseState<T> CurrentState;
 
   protected bool IsTransitioningState = false;
 

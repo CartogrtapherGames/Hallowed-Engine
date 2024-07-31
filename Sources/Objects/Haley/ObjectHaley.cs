@@ -20,6 +20,7 @@ public class ObjectHaley : CharacterBase
 
   public ObjectHaley(HaleyDataModel data, InputMap<PlayerInput> inputMap) : base(data)
   {
+    Id = "Haley";
     _inputMap = inputMap;
     _stateMachine = new HaleyStateManager(this);
     _stateMachine.Initialize();

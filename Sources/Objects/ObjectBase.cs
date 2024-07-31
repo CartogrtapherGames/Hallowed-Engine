@@ -15,7 +15,7 @@ public abstract class ObjectBase : IRenderableChild, IDisposable
 
   // in this case the *sprite* is the thing that as a rect and transform so we do not draw the object
   // itself and is more or less a container?
-  private Vector3 _transform;
+  public Vector3 _transform;
   private Vector2 _pivot;
 
   protected ObjectBase()
